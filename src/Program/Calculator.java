@@ -22,15 +22,11 @@ public class Calculator {
         } while (!checkValidIPV4(ipv4));
 
         // Tagolja az ip címet
-        String[] octets = ipv4.split("\\.");
+        String[] octetsIp = ipv4.split("\\.");
 
         // ip cím binaris átalakítása
         for (int i = 0; i < ipv4Binary.length; i++) {
-            ipv4Binary[i] = BinaryResolution(Integer.parseInt(octets[i]));
-        }
-        System.out.print("IP Binary: ");
-        for (int i = 0; i < ipv4Binary.length; i++) {
-            System.out.print(ipv4Binary[i] + " ");
+            ipv4Binary[i] = BinaryResolution(Integer.parseInt(octetsIp[i]));
         }
 
         //netmaskok listája
@@ -43,13 +39,15 @@ public class Calculator {
                 "252.0.0.0","248.0.0.0","240.0.0.0","224.0.0.0","192.0.0.0","128.0.0.0"};
 
         for (int i = 0; i < netmasks.length; i++) {
-
-            System.out.print(netmasks[i]+"   ");
-            if(i % 7 == 0){
+            if(i >= 17 && i != 24){
+                System.out.print("\t"+netmasks[i]+"\t\t");
+            }
+            else System.out.print(netmasks[i]+"\t\t");
+            if(i == 7 || i == 15 || i == 23 ){
                 System.out.println("\r");
             }
         }
-        //netmask ertéke
+        //netmask értéke
         String netmask;
 
         do {
@@ -58,81 +56,63 @@ public class Calculator {
         } while (!(Arrays.asList(netmasks).contains(netmask)));
 
         //netmask oktetekre tagolása
-        String[] octetsOfNetmask = netmask.split("\\.");
+        String[] octetsNetmask = netmask.split("\\.");
 
         //A netmask binaris alakja
         String[] binaryNetmask = new String[4];
 
         for (int i = 0; i < binaryNetmask.length; i++) {
-            binaryNetmask[i] = BinaryResolution(Integer.parseInt(octetsOfNetmask[i]));
-        }
-
-        System.out.print("\nNetmask Binary: ");
-        for (int i = 0; i < binaryNetmask.length; i++) {
-            System.out.print(binaryNetmask[i]+ " ");
+            binaryNetmask[i] = BinaryResolution(Integer.parseInt(octetsNetmask[i]));
         }
 
         //A network cím bináris alakja
-        String[] BinaryNetwork = new String[4];
-        for (int i = 0; i < BinaryNetwork.length; i++) {
-            BinaryNetwork[i] = String.valueOf(NetworkAddress(ipv4Binary[i],binaryNetmask[i]));
-            //BinaryNetwork[i] = BinaryResolution(Integer.parseInt(octetsNetwork[i]));
+        String[] binaryNetwork = new String[4];
+        for (int i = 0; i < binaryNetwork.length; i++) {
+            binaryNetwork[i] = (NetworkAddress(ipv4Binary[i],binaryNetmask[i]));
         }
 
         // A network cím oktet értékei
         String[] octetsNetwork = new String[4];
         for (int i = 0; i < 4; i++) {
-           // octetsNetwork[i] = String.valueOf(NetworkAddress(ipv4Binary[i],binaryNetmask[i]));
-            octetsNetwork[i] = DecimalResolution(BinaryNetwork[i]);
+            octetsNetwork[i] = DecimalResolution(binaryNetwork[i]);
         }
 
-        System.out.print("\nNetwork Address: ");
-        for (int i = 0; i < 4; i++) {
-            System.out.print(octetsNetwork[i]+".");
-        }
 
-        System.out.print("\nBinary Network Address: ");
-        for (int i = 0; i < 4; i++) {
-            System.out.print(BinaryNetwork[i]+" ");
-        }
 
-        //változó az egyesek széméra a netmaskb bináris alakjában
+        //változó az egyesek számára a netmask bináris alakjában
         int ones = numberOfOnes(binaryNetmask);
 
         //Broadcast cím bináris alakja
-        String[] BinaryBroadcast = new String[4];
+        String[] binaryBroadcast = new String[4];
 
         //netmaskban levo egyesek darabszama utan feltolteni a network address binary szamat egyesekkel
         int karakter = 0;
-        for (int i = 0; i < BinaryNetwork.length; i++) {
+
+        for (int i = 0; i < binaryNetwork.length; i++) {
             StringBuilder value = new StringBuilder();
+
             for (int j = 0; j < 8; j++) {
                 karakter++;
-                if(karakter > ones){
+
+                if (karakter > ones) {
                     value.append("1");
-                }else value.append(BinaryNetwork[i].charAt(j));
+
+                } else value.append(binaryNetwork[i].charAt(j));
             }
-            BinaryBroadcast[i] = String.valueOf(value);
+            binaryBroadcast[i] = String.valueOf(value);
         }
 
-        System.out.print("\nBinary Broadcast Address: ");
-        for (int i = 0; i < 4; i++) {
-            System.out.print(BinaryBroadcast[i]+" ");
-        }
 
         //Broadcast cím oktet értékei
         String[] octetBroadcast = new String[4];
-        for (int i = 0; i < BinaryBroadcast.length; i++) {
-           octetBroadcast[i] = String.valueOf(Integer.parseInt(BinaryBroadcast[i],2));
+        for (int i = 0; i < binaryBroadcast.length; i++) {
+           octetBroadcast[i] = String.valueOf(Integer.parseInt(binaryBroadcast[i],2));
+        }
 
-        }
-        System.out.print("\nBroadcast Address: ");
-        for (int i = 0; i < 4; i++) {
-            System.out.print(octetBroadcast[i]+".");
-        }
+
 
         //1st host
-        String[] firstHost = Arrays.copyOf(octetsNetwork,octetsNetwork.length);
+        String[] firstHost = Arrays.copyOf(octetsNetwork, octetsNetwork.length);
         int helper = Integer.parseInt(firstHost[3]);
         firstHost[3] = String.valueOf(helper+1);
 
@@ -141,37 +121,94 @@ public class Calculator {
         helper = Integer.parseInt(lastHost[3]);
         lastHost[3] = String.valueOf(helper-1);
 
-        System.out.print("\n1st host: ");
-        for (int i = 0; i < 4; i++) {
-            System.out.print(firstHost[i]+".");
-        }
+        printDatas(octetsIp,ipv4Binary,octetsNetmask,binaryNetmask,octetsNetwork,binaryNetwork,octetBroadcast,binaryBroadcast, firstHost,lastHost);
+
+    }
+    public static void printDatas(String[] octetsIp, String[] ipv4Binary, String[] octetsNetmask, String[] binaryNetmask,
+                                  String[] octetsNetwork, String[] binaryNetwork, String[] octetBroadcast, String[] binaryBroadcast,
+                                  String[] firstHost, String[] lastHost){
+        System.out.print("\nA megadott IP cím: ");
+        decimalPrint(octetsIp);
+        System.out.print("\nIP Binary: ");
+        binaryPrint(ipv4Binary);
+        System.out.println("\nAz IP cím '"+ipClass(octetsIp)+"' osztályú");
+        System.out.print("\nA megadott netmask cím: ");
+        decimalPrint(octetsNetmask);
+        System.out.print("\nNetmask Binary: ");
+        binaryPrint(binaryNetmask);
+        System.out.println("\nCIDR: "+ numberOfOnes(binaryNetmask));
+
+        System.out.print("\nNetwork Address: ");
+        decimalPrint(octetsNetwork);
+        System.out.print("\nBinary Network Address: ");
+        binaryPrint(binaryNetwork);
+
+        System.out.print("\n\nBroadcast Address: ");
+        decimalPrint(octetBroadcast);
+        System.out.print("\nBinary Broadcast Address: ");
+        binaryPrint(binaryBroadcast);
+
+        System.out.print("\n\n1st host: ");
+        decimalPrint(firstHost);
         System.out.print("\nLast host: ");
-        for (int i = 0; i < 4; i++) {
-            System.out.print(lastHost[i]+".");
-        }
+        decimalPrint(lastHost);
 
         System.out.println("\nNumber of  Hosts: "+ numberOfAllHosts(numberOfZeros(binaryNetmask)));
         System.out.println("Number of Usable Hosts: "+ numberOfUsableHosts(numberOfZeros(binaryNetmask)));
+    }
 
+    public static void binaryPrint(String [] binary){
+        for (int i = 0; i < 4; i++) {
+            System.out.print(binary[i]+" ");
+        }
+    }
+
+    public static void decimalPrint(String [] decimal){
+        for (int i = 0; i < 4; i++) {
+            if(i == 3){
+                System.out.print(decimal[i]);
+            }else System.out.print(decimal[i]+".");
+        }
+    }
+
+    /**
+     * Metódus az IP cím osztályának kiderítéséhez
+     * @param octets Az IP cím octetjei
+     * @return Egy karaktert ad vissza ami az IP cím osztályát jelöli
+     */
+    public static char ipClass(String[] octets){
+        char ch = 0;
+        if(Integer.parseInt(octets[0]) >= 0 && Integer.parseInt(octets[0]) <= 127){
+            ch = 'A';
+        }
+        if(Integer.parseInt(octets[0]) >= 128 && Integer.parseInt(octets[0]) <= 191){
+            ch = 'B';
+        }
+        if(Integer.parseInt(octets[0]) >= 192 && Integer.parseInt(octets[0]) <= 223){
+            ch = 'C';
+        }
+        if(Integer.parseInt(octets[0]) >= 224 && Integer.parseInt(octets[0]) <= 239){
+            ch = 'D';
+        }
+        if(Integer.parseInt(octets[0]) >= 240 && Integer.parseInt(octets[0]) <= 255){
+            ch = 'E';
+        }
+        return ch;
     }
 
     /**
      * Metódus a network cím kiszámolására
      *
-     * @param
-     * @param
-     * @return tmp.toString()
+     * @param binIP Az IPv4 cím binaris alakja
+     * @param binMask A netmask cím bináris alakja
+     *
+     * @return Egy string ami a network address bináris alakját tartalmazza
      */
     public static String NetworkAddress(String binIP, String binMask) {
         StringBuilder tmp = new StringBuilder();
         int a = Integer.parseInt(binIP);
         int b = Integer.parseInt(binMask);
 
-        /*for (int i = 0; i < 8; i++) {
-            if(a < b){
-                tmp.append(String.valueOf(a));
-            }else tmp.append(String.valueOf(b));
-        }*/
         for (int i = 0; i < 8; i++) {
             if(Integer.parseInt(String.valueOf(binIP.charAt(i))) < Integer.parseInt(String.valueOf(binMask.charAt(i)))){
                 tmp.append(binIP.charAt(i));
@@ -182,34 +219,32 @@ public class Calculator {
 
     /**
      * Metódus az összes host kiszámítására
-     * @param nulls
-     * @return
+     * @param nulls A binaris címből megkapott nullák száma
+     * @return Egy szám ami az összes host számát jelölli
      */
     public static int numberOfAllHosts(int nulls){
-        int h = (int)Math.pow(2,nulls);
-        return h;
+        return (int)Math.pow(2,nulls);
     }
 
     /**
      * Metódus a használható hostok kiszámítására
-     * @param nulls
-     * @return
+     * @param nulls A binaris netmask címből megkapott nullák száma
+     * @return Egy szám ami a használható hostok számát jelölli
      */
     public static int numberOfUsableHosts(int nulls){
-        int h = (int)Math.pow(2,nulls)-2;
-        return h;
+        return (int)Math.pow(2,nulls)-2;
     }
 
     /**
-     * Metódus a bináris alakban lévő címben lévő nullák megszámolására
-     * @param array
-     * @return
+     * Metódus a bináris netmask címben lévő nullák megszámolására
+     * @param array A bináris cím tömbje
+     * @return Egy szám ami a nullák számát jelöli
      */
     public static int numberOfZeros(String [] array){
         int db = 0;
-        for (int i = 0; i < array.length; i++) {
+        for (String s : array) {
             for (int j = 0; j < 8; j++) {
-                if(array[i].charAt(j) == '0'){
+                if (s.charAt(j) == '0') {
                     db++;
                 }
             }
@@ -218,15 +253,15 @@ public class Calculator {
     }
 
     /**
-     * Metódus a bináris alakban lévő címben lévő egyesek megszámolására
-     * @param array
-     * @return
+     * Metódus a bináris netmask címben lévő egyesek megszámolására
+     * @param array  A bináris cím tömbje
+     * @return Egy szám ami az egyesek számát jelöli
      */
     public static int numberOfOnes(String [] array){
         int db = 0;
-        for (int i = 0; i < array.length; i++) {
+        for (String s : array) {
             for (int j = 0; j < 8; j++) {
-                if(array[i].charAt(j) == '1'){
+                if (s.charAt(j) == '1') {
                     db++;
                 }
             }
@@ -235,8 +270,8 @@ public class Calculator {
     }
     /**
      * Metódus az oktetek binárissá alakítására
-     * @param octet
-     * @return
+     * @param octet A megadott cím oktetekre tagolt alakja
+     * @return egy string-é alakított szám ami a bináris alakot jelöli oktetenként
      */
 
     public static String BinaryResolution(int octet) {
@@ -253,6 +288,12 @@ public class Calculator {
         }
         return binaryString.toString();
     }
+
+    /**
+     * Metódus az bináris alak oktetekké alakítására
+     * @param binary A megadott cím bináris alakja
+     * @return egy string-é alakított szám ami az octet alakot jelöli
+     */
     public static String DecimalResolution(String binary) {
         int[] binarySystem = {128, 64, 32, 16, 8, 4, 2, 1};
         int binaryString = 0;
@@ -267,8 +308,8 @@ public class Calculator {
 
     /**
      * Metódus az IPV4 cím vizsgálatához
-     * @param ipv4
-     * @return boolean
+     * @param ipv4 Megadott ipv4 cím
+     * @return boolean Eldönti, hogy a megadott String helyes-e vagy sem
      */
 
     public static boolean checkValidIPV4(String ipv4){
@@ -288,8 +329,8 @@ public class Calculator {
 
     /**
      * Metódus, az oktetben lévő karakterek vizsgálatához
-     * @param str
-     * @return
+     * @param str Az oktet
+     * @return boolean Eldönti, hogy az adott oktet helyes-e vagy sem
      */
     private static boolean isNumber(String str) {
         try {

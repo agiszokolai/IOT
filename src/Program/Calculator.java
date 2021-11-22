@@ -77,8 +77,6 @@ public class Calculator {
             octetsNetwork[i] = DecimalResolution(binaryNetwork[i]);
         }
 
-
-
         //változó az egyesek számára a netmask bináris alakjában
         int ones = numberOfOnes(binaryNetmask);
 
@@ -102,14 +100,11 @@ public class Calculator {
             binaryBroadcast[i] = String.valueOf(value);
         }
 
-
         //Broadcast cím oktet értékei
         String[] octetBroadcast = new String[4];
         for (int i = 0; i < binaryBroadcast.length; i++) {
            octetBroadcast[i] = String.valueOf(Integer.parseInt(binaryBroadcast[i],2));
         }
-
-
 
         //1st host
         String[] firstHost = Arrays.copyOf(octetsNetwork, octetsNetwork.length);
@@ -206,8 +201,6 @@ public class Calculator {
      */
     public static String NetworkAddress(String binIP, String binMask) {
         StringBuilder tmp = new StringBuilder();
-        int a = Integer.parseInt(binIP);
-        int b = Integer.parseInt(binMask);
 
         for (int i = 0; i < 8; i++) {
             if(Integer.parseInt(String.valueOf(binIP.charAt(i))) < Integer.parseInt(String.valueOf(binMask.charAt(i)))){

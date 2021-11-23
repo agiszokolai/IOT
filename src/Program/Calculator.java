@@ -84,23 +84,11 @@ public class Calculator {
         String[] binaryBroadcast = new String[4];
 
         //netmaskban levo egyesek darabszama utan feltolteni a network address binary szamat egyesekkel
-        int karakter = 0;
+        getBroadcast(binaryNetwork, binaryBroadcast, ones);
 
-        for (int i = 0; i < binaryNetwork.length; i++) {
-            StringBuilder value = new StringBuilder();
-
-            for (int j = 0; j < 8; j++) {
-                karakter++;
-
-                if (karakter > ones) {
-                    value.append("1");
-
-                } else value.append(binaryNetwork[i].charAt(j));
-            }
-            binaryBroadcast[i] = String.valueOf(value);
-        }
-
-        //Broadcast cím oktet értékei
+        /*Broadcast cím oktet értékei, a binaris stringeket int-é alakítja majd átalakítja 2-es számrendszer-beli számmá
+        ezután visszaalakítja stringé, mert a tömb, amibe tárolva van az egy String tömb.
+        * */
         String[] octetBroadcast = new String[4];
         for (int i = 0; i < binaryBroadcast.length; i++) {
            octetBroadcast[i] = String.valueOf(Integer.parseInt(binaryBroadcast[i],2));
@@ -167,6 +155,30 @@ public class Calculator {
     }
 
     /**
+     * Metódus a Broadcast cím kiszámításához
+     * @param binaryNetwork A network address bináris alakja
+     * @param binaryBroadcast A broadcast cím bináris alakja (bekéréskor üres tömb)
+     * @param ones A netmask bináris alakjában lévő 1-esek száma
+     * @return egy String[] ami a broadcast cím bináris alkját tartalmazza
+     */
+    public static String[] getBroadcast(String[] binaryNetwork, String[] binaryBroadcast, int ones){
+        int karakter = 0;
+        for (int i = 0; i < binaryNetwork.length; i++) {
+            StringBuilder value = new StringBuilder();
+
+            for (int j = 0; j < 8; j++) {
+                karakter++;
+
+                if (karakter > ones) {
+                    value.append("1");
+
+                } else value.append(binaryNetwork[i].charAt(j));
+            }
+            binaryBroadcast[i] = String.valueOf(value);
+        }
+        return  binaryBroadcast;
+    }
+    /**
      * Metódus az IP cím osztályának kiderítéséhez
      * @param octets Az IP cím octetjei
      * @return Egy karaktert ad vissza ami az IP cím osztályát jelöli
@@ -193,10 +205,8 @@ public class Calculator {
 
     /**
      * Metódus a network cím kiszámolására
-     *
      * @param binIP Az IPv4 cím binaris alakja
      * @param binMask A netmask cím bináris alakja
-     *
      * @return Egy string ami a network address bináris alakját tartalmazza
      */
     public static String NetworkAddress(String binIP, String binMask) {

@@ -73,8 +73,8 @@ public class Calculator {
 
         // A network cím oktet értékei
         String[] octetsNetwork = new String[4];
-        for (int i = 0; i < 4; i++) {
-            octetsNetwork[i] = DecimalResolution(binaryNetwork[i]);
+        for (int i = 0; i < binaryNetwork.length; i++) {
+            octetsNetwork[i] = String.valueOf(Integer.parseInt(binaryNetwork[i],2));
         }
 
         //változó az egyesek számára a netmask bináris alakjában
@@ -290,23 +290,6 @@ public class Calculator {
             binaryString.append("0");
         }
         return binaryString.toString();
-    }
-
-    /**
-     * Metódus az bináris alak oktetekké alakítására
-     * @param binary A megadott cím bináris alakja
-     * @return egy string-é alakított szám ami az octet alakot jelöli
-     */
-    public static String DecimalResolution(String binary) {
-        int[] binarySystem = {128, 64, 32, 16, 8, 4, 2, 1};
-        int binaryString = 0;
-
-        for (int i = 0; i < 8 ; i++) {
-            if (binary.charAt(i) == '1'){
-               binaryString+= binarySystem[i];
-            }
-        }
-        return String.valueOf(binaryString);
     }
 
     /**

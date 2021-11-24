@@ -300,7 +300,7 @@ public class Calculator {
 
     public static boolean checkValidIPV4(String ipv4){
 
-        // fsfsdf
+        // minimum hossz 7 - 4 szám 3 pont max hossz 15 - 12 szám 3 pont
         if (ipv4.length() < 7 || ipv4.length() > 15 ) return false;
 
         String[] array = ipv4.split("\\.");
